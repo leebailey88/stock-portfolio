@@ -7,14 +7,15 @@ $SPY_INITIAL_PRICE = 167.42;
 $QQQ_INITIAL_PRICE = 78.75;
 $SDOG_INITIAL_PRICE = 31.90;
 
-$CASH = -1450.51;
+$CASH = -14374.74;
 
 // ticker, shares, cost basis
 $stocks = array 
     (
-        array("CIMT", 756, 6.65),
+        array("SDOG", 289, 32.80),
         array("AMBA", 314, 19.45),
         array("GPRC", 3730, 2.40),
+        array("SPWR", 160, 31.42),
         array("CCCL", 1400, 3.70),
         array("PXLW", 1100, 5.02),
         array("GALE", 3015, 2.43),
@@ -22,6 +23,8 @@ $stocks = array
         array("CAMP", 217, 23.04),
         array("GSAT", 2500, 1.25),
         array("SGOC", 1100, 2.95),
+        array("SIAF", 3350, 0.56),
+        array("CHLN", 400, 3.00)
     );
 
 setlocale(LC_MONETARY,"en_US");
@@ -134,6 +137,9 @@ function displayRow($data, $initialPrice = null) {
             $valueString = '';
             $dayGainString = '';
             $totalGainString = '';
+            $pe = '';
+            $ps = '';
+            $pb = '';
             if (!empty($initialPrice)) {
                 // extra tab needed to properly align with table below
                 $totalChangePercent = "\t" . monify_string(number_format((($price-$initialPrice)/($initialPrice))*100, 2)) . "%";
@@ -143,6 +149,9 @@ function displayRow($data, $initialPrice = null) {
         // edge case to ensure columns align properly
         if ($dayGain > -10 && $dayGain < 10) {
             $dayGainString .= "\t";
+        }
+        if ($totalGain > -10 && $totalGain < 10) {
+            $totalGainString .= "\t";
         }
 
         echo "$ticker\t$price\t$changePercent\t$dayGainString\t$valueString\t$totalChangePercent\t$totalGainString\t$ps\t$pe\t$pb\n";
@@ -179,6 +188,7 @@ foreach( $stocks as $stock ) {
     $total += $vals[1];
     $totalGain += $vals[1] - $stock[2]*$stock[1];
 }
+$leverage = number_format($total/($total + $CASH), 2);
 $total += $CASH;
 $changePercent = monify_string(number_format(($dayGain/($total-$dayGain))*100, 2)) . "%";
 $dayGainString = monify_string(money_format("%!n", $dayGain), true);
@@ -196,7 +206,7 @@ if ($CASH < 0) {
 else {
     $cashString = "$" . money_format("%!n", $CASH);
 }
-echo "\nCash:\t\t\t\t\t$cashString\n";
+echo "\nCash:\t\t\t\t\t$cashString ($leverage leverage)\n";
 echo "Total:\t\t$changePercent\t$dayGainString\t$totalString\t$totalChangePercent\t$totalGainString\n\n";
 
 ?>
